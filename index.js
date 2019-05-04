@@ -1,80 +1,33 @@
-//GLOBAL VARIABLES
-const randomButton = document.querySelector('.random');
-const listButton = document.querySelector('.list');
-const refreshButton = document.querySelector('.grid');
-//spinner
+var contenido = document.querySelector('#contenido');
+var url="https://dog.ceo/api/breeds/list/all";
 
-
-//EVENT LISTENERS
-// window load
-window.addEventListener('load', createImageGrid);
-refreshButton.addEventListener('click', createImageGrid);
-
-//FETCH CALLS
-//wikipedia dog term serach
-
-
-
-
-
-function createImageGrid(){
-  fetch('https://dog.ceo/api/breeds/image/random/100')
-  .then(response => response.json())
-  .then(data => createGrid(data.message))
+function traer(){
+	fetch(url)
+         .then(res => res.json())
+         .then(datos => {
+              console.log(datos.message)
+              mostrar(datos.message);      
+          })
 }
 
 
-
-
-//fixBreed
-function fixBreed(breedName){
-  if(breedName === 'germanshepherd'){
-    return 'German Shepherd';
-  }else if(breedName === 'mexicanhairless'){
-    return 'Mexican Hairless';
-  }else if(breedName === 'stbernard'){
-    return 'St. Bernard';
-  }else if(breedName === "african"){
-    return 'African Wild Dog';
-  }else if(breedName === 'bullterrier'){
-    return 'Bull Terier';
-  }
-  return capitalize(breedName);
-}
-
-//capitalize breed name
-function capitalize(breedName){
-  return breedName.replace(/\-/g,' ')
-                  .split(" ")
-                  .map(word => word.charAt(0).toUpperCase()+word.slice(1))
-				          .join(" ");
-}
-
-//extract breed name
-function extractBreedName(data){
-  let regex = /https:\/\/images\.dog\.ceo\/breeds\/(\w+-?\w+)\/\w+\.\w+/g;
-  let match = regex.exec(data);
-  return fixBreed(match[1]);
-}
-
-//createGrid
-function createGrid(data){
-  let output = '';
-  const container = document.querySelector('.card-deck');
-  data.map(item =>{
-    output+=
-    `
-    <div class="col-md-3">
-      <div class="well text-center">
-        <h4>${extractBreedName(item)}</h4>
-      </div>
-      <div>
-        <img src="${item}"alt="${extractBreedName(item)}"/>
-      </div>
-    </div>    
-    `
-  })
-    container.innerHTML = output;
-}
-
-
+function mostrar(data){
+	contenido.innerHTML = '';
+            for(let valor of Object.keys(data)){
+                //console.log("RAZA: "+valor)
+                //https://dog.ceo/api/breed/hound/images
+          fetch("https://dog.ceo/api/breed/"+valor+"/images/random")
+         .then(res => res.json())
+         .then(datos => {
+              //console.log("Raza: "+valor+" , img: "+datos.message);  
+              contenido.innerHTML += `
+                
+                <div class="col-md-4 text-center card" id="div-info">
+					<img src="${datos.message}" style="width: 100%">
+					<h2 class="text-center">${valor}</h2>
+				</div>
+                
+                ` 
+          })
+          }//end for
+        }//end function mostrar
